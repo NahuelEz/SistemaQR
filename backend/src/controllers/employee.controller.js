@@ -164,6 +164,25 @@ class EmployeeController {
       res.status(500).json({ message: 'Error fetching menu selections' });
     }
   }
+
+  static async getEmployeeMealRegistrations(req, res) {
+    try {
+      const { id } = req.params;
+      const { startDate, endDate } = req.query;
+
+      const employee = await User.findById(id);
+      if (!employee || employee.role !== 'employee') {
+        return res.status(404).json({ message: 'Employee not found' });
+      }
+
+      const MealRegistration = require('../models/meal-registration.model');
+      const registrations = await MealRegistration.getUserRegistrations(id, startDate, endDate);
+      res.json(registrations);
+    } catch (error) {
+      console.error('Get meal registrations error:', error);
+      res.status(500).json({ message: 'Error fetching meal registrations' });
+    }
+  }
 }
 
 module.exports = EmployeeController;
