@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  db:
+    image: mysql:5.7
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: meal_registration_db
+    ports:
+      - "3306:3306"
+
+  backend:
+    build:
+      context: ./backend
+    ports:
+      - "3001:3001"
+    depends_on:
+      - db
+    environment:
+      DB_HOST: db
+      DB_USER: root
+      DB_PASSWORD: root
+      DB_NAME: meal_registration_db
+
+  frontend:
+    build:
+      context: ./frontend
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
