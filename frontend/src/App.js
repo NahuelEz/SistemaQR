@@ -1,145 +1,79 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { ThemeProvider, createTheme } from '@mui/material/styles';
-import CssBaseline from '@mui/material/CssBaseline';
+import { ThemeProvider } from '@mui/material/styles';
+import { AuthProvider } from './context/AuthContext';
+import theme from './theme';
 
-// Context Providers
-import { AuthProvider } from './contexts/AuthContext';
+// Layouts
+import DashboardLayout from './layouts/DashboardLayout';
 
-// Auth Components
-import Login from './components/auth/Login';
-import Register from './components/auth/Register';
-import ProtectedRoute from './components/auth/ProtectedRoute';
+// Pages
+import Login from './pages/auth/Login';
+import Dashboard from './pages/dashboard/Dashboard';
+import Employees from './pages/employees/Employees';
+import Menus from './pages/menus/Menus';
+import WeeklySelection from './pages/menus/WeeklySelection';
+import QRScanner from './pages/qr-scanner/QRScanner';
+import Profile from './pages/profile/Profile';
 
-// Layout Components
-import MainLayout from './components/layout/MainLayout';
-
-// Lazy load other components
-const Menu = React.lazy(() => import('./components/menu/Menu'));
-const QRScanner = React.lazy(() => import('./components/meal/QRScanner'));
-const EmployeeList = React.lazy(() => import('./components/employee/EmployeeList'));
-const Reports = React.lazy(() => import('./components/menu/Reports'));
-const Profile = React.lazy(() => import('./components/auth/Profile'));
-const WeeklyMenuSelection = React.lazy(() => import('./components/menu/WeeklyMenuSelection'));
-
-// Create theme
-const theme = createTheme({
-  palette: {
-    primary: {
-      main: '#1976d2',
-    },
-    secondary: {
-      main: '#dc004e',
-    },
-    background: {
-      default: '#f5f5f5',
-    },
-  },
-  typography: {
-    fontFamily: [
-      '-apple-system',
-      'BlinkMacSystemFont',
-      '"Segoe UI"',
-      'Roboto',
-      '"Helvetica Neue"',
-      'Arial',
-      'sans-serif',
-    ].join(','),
-  },
-});
-
-const LoadingFallback = () => (
-  <div style={{ 
-    display: 'flex', 
-    justifyContent: 'center', 
-    alignItems: 'center', 
-    height: '100vh' 
-  }}>
-    Loading...
-  </div>
-);
+// Components
+import ProtectedRoute from './components/ProtectedRoute';
 
 function App() {
   return (
     <ThemeProvider theme={theme}>
-      <CssBaseline />
       <AuthProvider>
         <Router>
-          <React.Suspense fallback={<LoadingFallback />}>
-            <Routes>
-              {/* Public Routes */}
-              <Route path="/login" element={<Login />} />
-              <Route path="/register" element={<Register />} />
+          <Routes>
+            {/* Ruta pública - Login */}
+            <Route path="/login" element={<Login />} />
 
-              {/* Protected Routes */}
+            {/* Rutas protegidas */}
+            <Route
+              path="/"
+              element={
+                <ProtectedRoute>
+                  <DashboardLayout />
+                </ProtectedRoute>
+              }
+            >
+              {/* Dashboard - Página principal */}
+              <Route index element={<Dashboard />} />
+
+              {/* Rutas de administración - Solo para admins */}
               <Route
-                path="/menu"
+                path="employees"
                 element={
-                  <ProtectedRoute roles={['admin', 'employee']}>
-                    <Menu />
+                  <ProtectedRoute adminOnly>
+                    <Employees />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="menus"
+                element={
+                  <ProtectedRoute adminOnly>
+                    <Menus />
                   </ProtectedRoute>
                 }
               />
 
+              {/* Rutas para todos los usuarios autenticados */}
+              <Route path="weekly-selection" element={<WeeklySelection />} />
               <Route
-                path="/scan"
+                path="qr-scanner"
                 element={
-                  <ProtectedRoute roles={['admin', 'employee']}>
+                  <ProtectedRoute adminOnly>
                     <QRScanner />
                   </ProtectedRoute>
                 }
               />
+              <Route path="profile" element={<Profile />} />
+            </Route>
 
-              <Route
-                path="/employees"
-                element={
-                  <ProtectedRoute roles={['admin']}>
-                    <EmployeeList />
-                  </ProtectedRoute>
-                }
-              />
-
-              <Route
-                path="/reports"
-                element={
-                  <ProtectedRoute roles={['admin']}>
-                    <Reports />
-                  </ProtectedRoute>
-                }
-              />
-
-              <Route
-                path="/profile"
-                element={
-                  <ProtectedRoute roles={['admin', 'employee']}>
-                    <Profile />
-                  </ProtectedRoute>
-                }
-              />
-
-              <Route
-                path="/weekly-menu"
-                element={
-                  <ProtectedRoute roles={['employee']}>
-                    <WeeklyMenuSelection />
-                  </ProtectedRoute>
-                }
-              />
-
-              {/* Redirect root to appropriate page based on role */}
-              <Route
-                path="/"
-                element={
-                  <ProtectedRoute roles={['admin', 'employee']}>
-                    <Navigate to="/menu" replace />
-                  </ProtectedRoute>
-                }
-              />
-
-              {/* Catch all route */}
-              <Route path="*" element={<Navigate to="/" replace />} />
-            </Routes>
-          </React.Suspense>
+            {/* Redirigir rutas no encontradas al dashboard */}
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
         </Router>
       </AuthProvider>
     </ThemeProvider>
