@@ -1,7 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   Box,
-  Paper,
   Typography,
   TextField,
   Button,
@@ -32,11 +31,7 @@ const Profile = () => {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
 
-  useEffect(() => {
-    loadProfile();
-  }, []);
-
-  const loadProfile = async () => {
+  const loadProfile = useCallback(async () => {
     try {
       const data = await getUserProfile(user.id);
       setProfileData({
@@ -46,7 +41,11 @@ const Profile = () => {
     } catch (error) {
       setError('Error loading profile');
     }
-  };
+  }, [user.id]);
+
+  useEffect(() => {
+    loadProfile();
+  }, [loadProfile]);
 
   const handleProfileChange = (e) => {
     const { name, value } = e.target;

@@ -34,12 +34,6 @@ const QRScanner = () => {
     }
   };
 
-  const handleError = (error) => {
-    console.error(error);
-    setError('Error accessing camera');
-    setScanning(false);
-  };
-
   const handleMealTypeChange = (event) => {
     setMealType(event.target.value);
   };
@@ -111,6 +105,11 @@ const QRScanner = () => {
                 <QrReader
                   constraints={{ facingMode: 'environment' }}
                   onResult={handleResult}
+                  onError={(error) => {
+                    console.error(error);
+                    setError('Error accessing camera');
+                    setScanning(false);
+                  }}
                   style={{ width: '100%' }}
                 />
                 <Button
