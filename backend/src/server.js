@@ -51,17 +51,17 @@ const PORT = process.env.PORT || 5000;
 
 const startServer = async () => {
   try {
-    // Test database connection
-    await testConnection();
-
-    // Initialize database schema
+    // Initialize database schema first
     await initializeDatabase();
+    
+    // Then test the connection
+    await testConnection();
 
     // Start server
     app.listen(PORT, () => {
       console.log(`Server running on port ${PORT}`);
-      console.log(`Environment: ${process.env.NODE_ENV}`);
-      console.log(`CORS Origin: ${process.env.CORS_ORIGIN}`);
+      console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
+      console.log(`CORS Origin: ${process.env.CORS_ORIGIN || '*'}`);
     });
   } catch (error) {
     console.error('Failed to start server:', error);
