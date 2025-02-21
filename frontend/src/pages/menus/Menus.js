@@ -25,7 +25,7 @@ import {
 } from '@mui/material';
 import { Edit as EditIcon, Delete as DeleteIcon } from '@mui/icons-material';
 import { getMenus, createMenu, updateMenu, deleteMenu } from '../../services/menuService';
-import { format } from 'date-fns';
+import { parseISO, format } from 'date-fns';
 
 const Menus = () => {
   const [menus, setMenus] = useState([]);
@@ -123,6 +123,15 @@ const Menus = () => {
     }
   };
 
+  const formatDate = (dateString) => {
+    try {
+      return format(parseISO(dateString), 'MMM dd, yyyy');
+    } catch (error) {
+      console.error('Error formatting date:', error);
+      return dateString;
+    }
+  };
+
   return (
     <Box>
       <Grid container spacing={2}>
@@ -167,7 +176,7 @@ const Menus = () => {
               <TableBody>
                 {menus.map((menu) => (
                   <TableRow key={menu.id}>
-                    <TableCell>{format(new Date(menu.date), 'MMM dd, yyyy')}</TableCell>
+                    <TableCell>{formatDate(menu.date)}</TableCell>
                     <TableCell>{menu.meal_type}</TableCell>
                     <TableCell>{menu.main_dish}</TableCell>
                     <TableCell>{menu.alternative_dish}</TableCell>

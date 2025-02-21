@@ -13,7 +13,7 @@ import {
   TextField
 } from '@mui/material';
 import { getWeeklyMenu, saveWeeklySelection } from '../../services/menuService';
-import { format, startOfWeek } from 'date-fns';
+import { parseISO, format, startOfWeek } from 'date-fns';
 
 const WeeklySelection = () => {
   const [weeklyMenu, setWeeklyMenu] = useState([]);
@@ -68,8 +68,13 @@ const WeeklySelection = () => {
     }
   };
 
-  const getDayName = (date) => {
-    return format(new Date(date), 'EEEE');
+  const getDayName = (dateString) => {
+    try {
+      return format(parseISO(dateString), 'EEEE');
+    } catch (error) {
+      console.error('Error formatting date:', error);
+      return dateString;
+    }
   };
 
   return (
