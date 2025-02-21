@@ -13,7 +13,7 @@ import {
   TextField
 } from '@mui/material';
 import { getWeeklyMenu, saveWeeklySelection } from '../../services/menuService';
-import { format, startOfWeek, addDays } from 'date-fns';
+import { format, startOfWeek } from 'date-fns';
 
 const WeeklySelection = () => {
   const [weeklyMenu, setWeeklyMenu] = useState([]);

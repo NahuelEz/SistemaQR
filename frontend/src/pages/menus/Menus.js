@@ -139,7 +139,13 @@ const Menus = () => {
 
         {(error || success) && (
           <Grid item xs={12}>
-            <Alert severity={error ? "error" : "success"}>
+            <Alert
+              severity={error ? "error" : "success"}
+              onClose={() => {
+                setError(null);
+                setSuccess(null);
+              }}
+            >
               {error || success}
             </Alert>
           </Grid>

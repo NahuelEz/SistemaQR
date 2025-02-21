@@ -15,7 +15,7 @@ import {
   DialogActions,
   Grid
 } from '@mui/material';
-import QrReader from 'react-qr-reader';
+import { QrReader } from 'react-qr-reader';
 import { registerMeal } from '../../services/mealService';
 
 const QRScanner = () => {
@@ -26,18 +26,18 @@ const QRScanner = () => {
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [scannedData, setScannedData] = useState(null);
 
-  const handleError = (err) => {
-    console.error(err);
-    setError('Error accessing camera');
-    setScanning(false);
-  };
-
-  const handleScan = (data) => {
-    if (data) {
-      setScannedData(data);
+  const handleResult = async (result) => {
+    if (result) {
+      setScannedData(result?.text);
       setShowConfirmation(true);
       setScanning(false);
     }
+  };
+
+  const handleError = (error) => {
+    console.error(error);
+    setError('Error accessing camera');
+    setScanning(false);
   };
 
   const handleMealTypeChange = (event) => {
@@ -109,9 +109,8 @@ const QRScanner = () => {
             ) : (
               <Box sx={{ position: 'relative' }}>
                 <QrReader
-                  delay={300}
-                  onError={handleError}
-                  onScan={handleScan}
+                  constraints={{ facingMode: 'environment' }}
+                  onResult={handleResult}
                   style={{ width: '100%' }}
                 />
                 <Button
