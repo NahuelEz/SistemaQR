@@ -9,7 +9,8 @@ const pool = mysql.createPool({
   waitForConnections: true,
   connectionLimit: 10,
   queueLimit: 0,
-  timezone: '+00:00'
+  timezone: '+00:00',
+  multipleStatements: true
 });
 
 // Test database connection
@@ -32,15 +33,8 @@ const initializeDatabase = async () => {
     const schemaPath = path.join(__dirname, '..', 'database', 'schema.sql');
     const schema = fs.readFileSync(schemaPath, 'utf8');
 
-    // Split schema into individual statements
-    const statements = schema
-      .split(';')
-      .filter(statement => statement.trim().length > 0);
-
-    // Execute each statement
-    for (const statement of statements) {
-      await pool.execute(statement + ';');
-    }
+    // Execute the schema as a single query
+    await pool.query(schema);
 
     console.log('Database schema initialized successfully');
   } catch (error) {
